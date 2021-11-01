@@ -1,0 +1,9 @@
+/Dataset/
+/face_age/
+/photos/
+*.h5
+*.pickle
+*.pca
+*.zip
+*.tar
+*.7z
