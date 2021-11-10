@@ -1,6 +1,7 @@
 import pickle
 import cv2
 import os
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -32,45 +33,65 @@ def gender_predict(face, pca_eivector, model):
     return pred_result
 
 font = cv2.FONT_HERSHEY_SIMPLEX
+# video_capture = cv2.VideoCapture('X:\\qq\\qq_files\\1492199983\\FileRecv\\427051444-1-208.mp4')
 video_capture = cv2.VideoCapture(1)
+fpsLimit = 10
+startTime = time.time()
 
-while True:
+
+while video_capture.isOpened():
     # Capture frame-by-frame
+
     ret, frame = video_capture.read()
 
+    # nowTime = time.time()       # possiable FPS control
+    # if (int(nowTime - startTime)) > fpsLimit:
+    #     # do other cv2 stuff....
+    #     startTime = time.time() # reset time
+
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    face_gray = gray[0:0, 0:0]
+    #need to be defined earlier incase there are no face detect at the begining
 
     faces = faceCascade.detectMultiScale(
         gray,
         scaleFactor=1.1,
         minNeighbors=5,
-        minSize=(150,150),
+        minSize=(180,180),
         flags=cv2.CASCADE_SCALE_IMAGE
     )
 
-    # Draw a rectangle around the faces
     for (x, y, w, h) in faces:
+        # Draw a rectangle around the faces
         cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 3)
-        roi_gray = gray[y:y+h, x:x+w]
-        roi_color = frame[y:y+h, x:x+w]
+        face_gray = gray[y:y+h, x:x+w]
+        face_color_GBR = frame[y:y+h, x:x+w]
         
-        roi_color = cv2.cvtColor(roi_color, cv2.COLOR_BGR2RGB)
+        face_color_RGB = cv2.cvtColor(face_color_GBR, cv2.COLOR_BGR2RGB)
         
-        face_predit_result = gender_predict(roi_color, pca_90, SVC_model)
+        face_predit_result = gender_predict(face_color_RGB, pca_90, SVC_model)
         if face_predit_result == 1:
-            cv2.putText(frame,'Male Face',(x, y), font, 2,(255,0,0),5)
+            cv2.putText(frame,'Male',(x, y), font, 2,(255,0,0),5)
         elif face_predit_result == 0:
-            cv2.putText(frame,'Female Face',(x, y), font, 2,(255,0,0),5)
+            cv2.putText(frame,'Female',(x, y), font, 2,(255,0,0),5)
+    
+    eyes = eyeCascade.detectMultiScale(
+        face_gray,
+        scaleFactor= 1.16,
+        minNeighbors=10,
+        minSize=(30, 30)
+    )
 
-    # smile = smileCascade.detectMultiScale(roi_gray,scaleFactor= 1.16,minNeighbors=35,minSize=(25, 25),flags=cv2.CASCADE_SCALE_IMAGE)
+    for (ex,ey,ew,eh) in eyes:
+        cv2.rectangle(face_color_GBR,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
+        cv2.putText(frame,'Eye',(x + ex,y + ey), 1, 1, (0, 255, 0), 1)
+
+    # smile = smileCascade.detectMultiScale(face_gray,scaleFactor= 1.16,minNeighbors=35,minSize=(25, 25),flags=cv2.CASCADE_SCALE_IMAGE)
     # for (sx, sy, sw, sh) in smile:
-    #     cv2.rectangle(roi_color, (sh, sy), (sx+sw, sy+sh), (255, 0, 0), 2)
+    #     cv2.rectangle(face_color_GBR, (sh, sy), (sx+sw, sy+sh), (255, 0, 0), 2)
     #     cv2.putText(frame,'Smile',(x + sx,y + sy), 1, 1, (0, 255, 0), 1)
 
-    # eyes = eyeCascade.detectMultiScale(roi_gray,scaleFactor= 1.16,minNeighbors=20,minSize=(30, 30))
-    # for (ex,ey,ew,eh) in eyes:
-    #     cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
-    #     cv2.putText(frame,'Eye',(x + ex,y + ey), 1, 1, (0, 255, 0), 1)
+
 
     cv2.putText(frame,'Number of Faces : ' + str(len(faces)),(40, 40), font, 1,(255,0,0),2)      
     # Display the resulting frame
