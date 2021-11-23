@@ -2,7 +2,6 @@
 /face_age/
 /face_age_group/
 /photos/
-*.h5
 *.pickle
 *.pca
 *.zip
