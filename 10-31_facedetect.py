@@ -13,17 +13,25 @@ faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontal
 eyeCascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
 smileCascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_smile.xml')
 
-model_name = 'svc_model_v1.1.h5'
-pca_name = 'pca_90_eivector.pca'
+gender_model_name = 'svc_model_v1.1.h5'
+gender_pca_name = 'pca_90_eivector.pca'
 
-with open(model_name, 'rb') as model:
-    SVC_model = pickle.load(model)
+age_model_name ='svc_age_model_v1.1.h5'
+age_pca_name ='pca_90_age_eivector_v1.1.pca'
 
-with open(pca_name, 'rb') as pca:    
-    pca_90 = pickle.load(pca)
+with open(gender_model_name, 'rb') as gender_model:
+    SVC_gender_model = pickle.load(gender_model)
 
+with open(gender_pca_name, 'rb') as gender_pca:    
+    pca_gender_90 = pickle.load(gender_pca)
 
-def gender_predict(face, pca_eivector, model):
+with open(age_model_name, 'rb') as age_model:
+    SVC_age_model = pickle.load(age_model)
+
+with open(age_pca_name, 'rb') as age_pca:
+    pca_age_90 = pickle.load(age_pca)
+
+def model_predict(face, pca_eivector, model):
     np_face = cv2.resize(face, (100, 100))
     plt.imshow(np_face)
     fd = hog(np_face, orientations=8, pixels_per_cell=(8,8),cells_per_block=(1,1),
@@ -69,22 +77,32 @@ while video_capture.isOpened():
         
         face_color_RGB = cv2.cvtColor(face_color_GBR, cv2.COLOR_BGR2RGB)
         
-        face_predit_result = gender_predict(face_color_RGB, pca_90, SVC_model)
+        face_predit_result = model_predict(face_color_RGB, pca_gender_90, SVC_gender_model)
         if face_predit_result == 1:
-            cv2.putText(frame,'Male',(x, y), font, 2,(255,0,0),5)
+            cv2.putText(frame,'Male',(x+w, y+h), font, 2,(255,0,0),5)
         elif face_predit_result == 0:
-            cv2.putText(frame,'Female',(x, y), font, 2,(255,0,0),5)
-    
-    eyes = eyeCascade.detectMultiScale(
-        face_gray,
-        scaleFactor= 1.16,
-        minNeighbors=10,
-        minSize=(30, 30)
-    )
+            cv2.putText(frame,'Female',(x+w, y+h), font, 2,(255,0,0),5)
 
-    for (ex,ey,ew,eh) in eyes:
-        cv2.rectangle(face_color_GBR,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
-        cv2.putText(frame,'Eye',(x + ex,y + ey), 1, 1, (0, 255, 0), 1)
+        age_predict_result = model_predict(face_color_RGB, pca_age_90, SVC_age_model)
+        if age_predict_result == 0:
+            cv2.putText(frame,'Children',(x, y), font, 2,(255,0,0),5)
+        elif age_predict_result == 1:
+            cv2.putText(frame,'Teenagers',(x, y), font, 2,(255,0,0),5)
+        elif age_predict_result == 2:
+            cv2.putText(frame,'Adults',(x, y), font, 2,(255,0,0),5)
+        elif age_predict_result == 3:
+            cv2.putText(frame,'Elders',(x, y), font, 2,(255,0,0),5)
+    
+    # eyes = eyeCascade.detectMultiScale(
+    #     face_gray,
+    #     scaleFactor= 1.16,
+    #     minNeighbors=10,
+    #     minSize=(30, 30)
+    # )
+
+    # for (ex,ey,ew,eh) in eyes:
+    #     cv2.rectangle(face_color_GBR,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
+    #     cv2.putText(frame,'Eye',(x + ex,y + ey), 1, 1, (0, 255, 0), 1)
 
     # smile = smileCascade.detectMultiScale(face_gray,scaleFactor= 1.16,minNeighbors=35,minSize=(25, 25),flags=cv2.CASCADE_SCALE_IMAGE)
     # for (sx, sy, sw, sh) in smile:
@@ -95,7 +113,7 @@ while video_capture.isOpened():
 
     cv2.putText(frame,'Number of Faces : ' + str(len(faces)),(40, 40), font, 1,(255,0,0),2)      
     # Display the resulting frame
-    cv2.imshow('Video', frame)
+    cv2.imshow('Face Recognition AI', frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
       break
