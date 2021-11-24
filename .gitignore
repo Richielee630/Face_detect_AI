@@ -3,7 +3,6 @@
 /face_age_group/
 /photos/
 *.pickle
-*.pca
 *.zip
 *.tar
 *.7z
