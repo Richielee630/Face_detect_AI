@@ -46,6 +46,19 @@ video_capture = cv2.VideoCapture(1)
 fpsLimit = 10
 startTime = time.time()
 
+def make_1080p():      #change the scale of capture window. (2 options)
+    video_capture.set(3, 1920)
+    video_capture.set(4, 1080)
+def make_720p():
+    video_capture.set(3, 1280)
+    video_capture.set(4, 720)
+
+def change_res(width, height):   # way you can change the scale to 2k, 4k  
+    video_capture.set(3, width)
+    video_capture.set(4, height)
+
+make_720p()    #change windows size 你可以make 720p or 1080 ， 这方法有一个弊端就是必须摄像头支持所改变的分辨率
+
 
 while video_capture.isOpened():
     # Capture frame-by-frame
@@ -109,12 +122,13 @@ while video_capture.isOpened():
     #     cv2.rectangle(face_color_GBR, (sh, sy), (sx+sw, sy+sh), (255, 0, 0), 2)
     #     cv2.putText(frame,'Smile',(x + sx,y + sy), 1, 1, (0, 255, 0), 1)
 
-
-
-    cv2.putText(frame,'Number of Faces : ' + str(len(faces)),(40, 40), font, 1,(255,0,0),2)      
+    if len(faces) == 0:
+        cv2.putText(frame,'No faces detected',(50,50),cv2.FONT_HERSHEY_COMPLEX,2,(255,0,0),5)
+    elif len(faces) >= 1:   
+        cv2.putText(frame,'faces detected!',(50,50),cv2.FONT_HERSHEY_COMPLEX,2,(255,0,0),5)
+        cv2.putText(frame,'Number of Faces : ' + str(len(faces)),(50, 100), cv2.FONT_HERSHEY_COMPLEX, 2,(255,0,0),4)     
     # Display the resulting frame
     cv2.imshow('Face Recognition AI', frame)
-
     if cv2.waitKey(1) & 0xFF == ord('q'):
       break
 
