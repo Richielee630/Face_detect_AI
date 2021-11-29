@@ -1,5 +1,5 @@
 # Face_detect_AI
-## Overview: The main purpose of this project is to detect human face in a real-time video capture and provide prediction on its gender and ages.
+### Overview: The main purpose of this project is to detect human face in a real-time video capture and provide prediction on its gender and ages.
 ## Datasets choosed:
 * [CelebA 200K](https://www.kaggle.com/ashishjangra27/gender-recognition-200k-images-celeba)
 * [Facial Age_0~99](https://www.kaggle.com/frabbisw/facial-age)
@@ -24,3 +24,4 @@
   - CNN (convolutional neural network)
 
 ## software level diagram
+<img src=https://user-images.githubusercontent.com/60235970/143810071-177731b6-0052-4056-b1b7-d41a04dea028.jpg alt="face_detect_ai_sw_level_diagram" width = "1000"/>
