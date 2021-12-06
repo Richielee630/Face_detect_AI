@@ -59,7 +59,6 @@ def change_res(width, height):   # way you can change the scale to 2k, 4k
 
 make_720p()    #change windows size 你可以make 720p or 1080 ， 这方法有一个弊端就是必须摄像头支持所改变的分辨率
 
-
 while video_capture.isOpened():
     # Capture frame-by-frame
 
@@ -126,7 +125,7 @@ while video_capture.isOpened():
         cv2.putText(frame,'No faces detected',(50,50),cv2.FONT_HERSHEY_COMPLEX,2,(255,0,0),5)
     elif len(faces) >= 1:   
         cv2.putText(frame,'faces detected!',(50,50),cv2.FONT_HERSHEY_COMPLEX,2,(255,0,0),5)
-        cv2.putText(frame,'Number of Faces : ' + str(len(faces)),(50, 100), cv2.FONT_HERSHEY_COMPLEX, 2,(255,0,0),4)     
+        cv2.putText(frame,'Number of Faces : ' + str(len(faces)),(50, 100), cv2.FONT_HERSHEY_COMPLEX, 1,(255,0,0),4)     
     # Display the resulting frame
     cv2.imshow('Face Recognition AI', frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
